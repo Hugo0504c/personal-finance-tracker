@@ -1,3 +1,6 @@
+import json
+
+
 #We define the function that shows the "menu"
 def intro():
     print("\n" * 41)
@@ -33,6 +36,27 @@ def ask_amount(message):
             continue
 
         return amount
+
+
+#We define the functions that save and load the data in a JSON file
+def save_data(balance, transactions, next_id):
+    data = {
+        "balance": balance,
+        "transactions": transactions,
+        "next_id": next_id
+    }
+    with open("data.json", "w") as file:
+        json.dump(data, file)
+
+
+def load_data():
+    try:
+        with open("data.json", "r") as file:
+            data = json.load(file)
+            return data["balance"], data["transactions"], data["next_id"]
+    except FileNotFoundError:
+        #First time using the app: start with empty data
+        return 0.0, [], 1
 
 
 def add_income(balance, transactions, next_id):
@@ -172,10 +196,8 @@ def delete_transaction(balance, transactions):
     return balance
 
 
-#We define the initial parameters
-balance = 0.0
-transactions = []
-next_id = 1
+#We load the saved data (or start from zero the first time)
+balance, transactions, next_id = load_data()
 
 
 #Main program
@@ -204,6 +226,7 @@ while True:
             transactions,
             next_id
         )
+        save_data(balance, transactions, next_id)
 
     elif action == 2:
 
@@ -212,6 +235,7 @@ while True:
             transactions,
             next_id
         )
+        save_data(balance, transactions, next_id)
 
     elif action == 3:
 
@@ -231,6 +255,7 @@ while True:
             balance,
             transactions
         )
+        save_data(balance, transactions, next_id)
 
     else:
 
